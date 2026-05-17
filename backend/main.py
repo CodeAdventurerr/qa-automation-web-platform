@@ -15,7 +15,8 @@ from backend.core.security import require_api_key
 from backend.models.schemas import GenerateTestsRequest, GenerateTestsResponse, Project, RunTestsRequest
 from backend.storage.json_store import JsonStore
 
-load_dotenv()
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(PROJECT_ROOT / ".env")
 
 app = FastAPI(title="AI QA Automation Web Platform", version="0.1.0")
 allowed_origins = [
@@ -58,7 +59,7 @@ def run_tests(request: RunTestsRequest):
         raise HTTPException(status_code=404, detail=str(error)) from error
     report = executor.run_project(project, request)
     store.save_report(report)
-    reporter.export_json(report, Path(__file__).resolve().parents[1] / "reports")
+    reporter.export_json(report, PROJECT_ROOT / "reports")
     return report
 
 
@@ -78,7 +79,7 @@ def logs(test_id: str):
 @app.get("/reports/{project_id}/download", dependencies=[Depends(require_api_key)])
 def download_report(project_id: str):
     report = store.get_report(project_id)
-    path = Path(__file__).resolve().parents[1] / "reports" / f"{report.project_id}-{report.run_id}.json"
+    path = PROJECT_ROOT / "reports" / f"{report.project_id}-{report.run_id}.json"
     if not path.exists():
-        reporter.export_json(report, Path(__file__).resolve().parents[1] / "reports")
+        reporter.export_json(report, PROJECT_ROOT / "reports")
     return FileResponse(path, filename=f"{project_id}-report.json", media_type="application/json")
