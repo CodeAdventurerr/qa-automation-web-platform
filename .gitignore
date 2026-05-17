@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+backend/storage_data/
+reports/*.json
+reports/artifacts/
+.env
+
