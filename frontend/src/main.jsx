@@ -49,7 +49,11 @@ function App() {
   }, [report]);
 
   async function handleGenerate(event) {
-    event.preventDefault();
+    event?.preventDefault();
+    if (!url.trim() || !feature.trim()) {
+      setError("Enter a website URL and feature description first.");
+      return;
+    }
     setBusy("generate");
     setError("");
     setReport(null);
@@ -62,6 +66,10 @@ function App() {
     } finally {
       setBusy("");
     }
+  }
+
+  function scrollToSection(id) {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   async function handleRun() {
@@ -169,15 +177,29 @@ function App() {
               <TerminalSquare size={20} />
               <div>
                 <h2>Execution Flow</h2>
-                <p>AI generation to Selenium recovery in one pipeline.</p>
+                <p>Click a step to drive the workflow.</p>
               </div>
             </div>
-            {["Generate cases", "Run Selenium steps", "Detect locator failures", "Rank healed selectors", "Export report"].map((item) => (
-              <div className="flow-row" key={item}>
-                <span>{item}</span>
-                <ChevronRight size={18} />
-              </div>
-            ))}
+            <button className="flow-row" type="button" onClick={() => handleGenerate()} disabled={busy === "generate"}>
+              <span>{busy === "generate" ? "Generating cases" : "Generate cases"}</span>
+              {busy === "generate" ? <RefreshCcw size={18} className="spin" /> : <ChevronRight size={18} />}
+            </button>
+            <button className="flow-row" type="button" onClick={handleRun} disabled={!projectId || busy === "run"}>
+              <span>{busy === "run" ? "Running Selenium steps" : "Run Selenium steps"}</span>
+              {busy === "run" ? <RefreshCcw size={18} className="spin" /> : <ChevronRight size={18} />}
+            </button>
+            <button className="flow-row" type="button" onClick={() => scrollToSection("execution")} disabled={!report}>
+              <span>Detect locator failures</span>
+              <ChevronRight size={18} />
+            </button>
+            <button className="flow-row" type="button" onClick={() => scrollToSection("reports")} disabled={!report}>
+              <span>Rank healed selectors</span>
+              <ChevronRight size={18} />
+            </button>
+            <button className="flow-row" type="button" onClick={handleDownloadReport} disabled={!report || busy === "download"}>
+              <span>{busy === "download" ? "Exporting report" : "Export report"}</span>
+              {busy === "download" ? <RefreshCcw size={18} className="spin" /> : <ChevronRight size={18} />}
+            </button>
           </div>
         </section>
 

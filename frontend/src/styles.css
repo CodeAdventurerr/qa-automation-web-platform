@@ -306,9 +306,28 @@ a:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   min-height: 48px;
+  padding: 0;
+  border: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  background: transparent;
   color: #424245;
+  text-align: left;
+  cursor: pointer;
+  transition: color 180ms ease, background 180ms ease;
+}
+
+.flow-row:hover:not(:disabled),
+.flow-row:focus-visible {
+  color: #0066cc;
+  background: rgba(0, 113, 227, 0.06);
+}
+
+.flow-row:disabled {
+  cursor: not-allowed;
+  color: #a1a1a6;
+  opacity: 0.7;
 }
 
 .flow-row:last-child {
